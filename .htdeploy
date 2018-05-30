@@ -1,0 +1,16 @@
+php 持续链接，通过身份认证，用websocket通信传输数据，然后js页面资源更新
+
+#配置数据：config
+Mysql_conn.php ---> 数据库操作文件
+
+login.html ---> 入口
+    做登录数据处理，判断用户名密码的基础信息
+    发送websocket数据请求，验证身份信息
+
+socket_link.php ---> websocket接收处理文件
+    接收客户端发送的websocket数据请求，判断处理
+
+Transfer.php ---> 数据接受，中转文件
+
+
+

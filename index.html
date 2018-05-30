@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>数据分析平台</title>
+        <link href="./css/public.css" rel="stylesheet" type="text/css">
+        <script src="./js/login.js"></script>
+        <style>
+body{background:url(./images/bg.png) center bottom no-repeat; background-size: 100% 100%; }
+        </style>
+    </head>
+
+    <body onkeydown="KeyLogin();">
+        <section class="login_head">
+            <p>数据分析平台</p>
+            <p>Data analysis platform</p>
+        </section>
+        <section class="login_case">
+            <div class="login_tit">登录平台</div>
+            <div class="login_inp">
+                <div class="login_icou"></div>
+                <div class="login_inp1">
+                    <input type="text" class="login_hie" id="username"/>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="login_inp mar">
+                <div class="login_icoc"></div>
+                <div class="login_inp1">
+                    <input type="password" class="login_hie" id="password"/>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="login_mask">
+                <div class="mask_left">
+                    <input type="checkbox" checked/>
+                    记住密码
+                </div>
+                <div class="mask_right">
+                    忘记密码？
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="login_btn">
+                <input type="button" onclick="login()" value="登录"/>
+            </div>
+        </section>
+
+    </body>
+</html>
