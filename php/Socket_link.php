@@ -19,17 +19,22 @@ class SocketChat {
         $this->Transfer_obj = $Transfer_obj;
 		$this->startServer();
     }
-
+/*
 	public function startServer() {
         $this->master = socket_create_listen( $this->port );
 		if( !$this->master )
 			throw new \ErrorException("listen {$this->port} fail !");
 		self::$connectPool[] = $this->master;
 		while( true ){
+            echo "ceshi1";
 			$readFds = self::$connectPool;
+            echo "ceshi2";
 			@socket_select( $readFds, $writeFds, $e = null, $this->timeout ); 
+            echo "ceshi3";
             foreach( $readFds as $socket ){
+            echo "ceshi4";
 				if( $this->master == $socket ){
+            echo "ceshi5";
 					$client = socket_accept( $this->master ); 
 					$this->handShake = False;
 					if ($client < 0){
@@ -42,6 +47,7 @@ class SocketChat {
 						$this->connect( $client );
 					} 
 				}else{
+            echo "ceshi6";
 					$bytes = @socket_recv($socket, $buffer, 2048, 0);
 					if( $bytes == 0 ){
 						$this->disConnect( $socket );
@@ -55,7 +61,53 @@ class SocketChat {
 					}
 				}
 			}
+            echo "ceshi7";
         }
+    }
+*/
+	public function startServer() {
+        $this->master = socket_create_listen( $this->port );
+		if( !$this->master )
+			throw new \ErrorException("listen {$this->port} fail !");
+		self::$connectPool[] = $this->master;
+        echo "ceshi1\n";
+        while(true) {
+            $readFds = self::$connectPool;
+            echo "ceshi2\n";
+            @socket_select( $readFds, $writeFds, $e = null, $this->timeout ); 
+            echo "ceshi3\n";
+        }
+        foreach( $readFds as $socket ){
+        echo "ceshi4\n";
+            if( $this->master == $socket ){
+        echo "ceshi5\n";
+                $client = socket_accept( $this->master ); 
+                $this->handShake = False;
+                if ($client < 0){
+                    $this->log('clinet connect false!');
+                    continue; 
+                }
+                else{
+                    if( count( self::$connectPool ) > self::$maxConnectNum )
+                        continue;
+                    $this->connect( $client );
+                } 
+            }else{
+        echo "ceshi6\n";
+                $bytes = @socket_recv($socket, $buffer, 2048, 0);
+                if( $bytes == 0 ){
+                    $this->disConnect( $socket );
+                }else{ 
+                    if( !$this->handShake ){
+                        $this->doHandShake( $socket, $buffer ); 
+                    }else{
+                        $buffer = $this->decode( $buffer );
+                        $this->parseMessage( $buffer, $socket );
+                    }
+                }
+            }
+        }
+        echo "ceshi7\n";
     }
 
 	function doHandShake($socket, $buffer){
@@ -155,8 +207,8 @@ class SocketChat {
 		@file_put_contents( './' . date("Y-m-d") . ".log", date('Y-m-d H:i:s') . " " . $mess . PHP_EOL, FILE_APPEND );
 	}
 
-    protected function successLogin($socket) {
-        $message = $this->Transfer_obj->Jump_html("main.html");
+    protected function successLogin($socket,$htmlName) {
+        $message = $this->Transfer_obj->Jump_html($htmlName);
         $this->send($socket, $message);
     }
     protected function failureLogin($socket) {
@@ -170,13 +222,15 @@ class SocketChat {
 		if(!empty($user) && $user === "ture"){
             $username = $message['userNM'];
             $password = $message['passWD'];
-            $result = $this->Mysql_obj->Authentication($username,$password);
+            $htmlname = $message['htmlNM'];
+            $result = $this->Mysql_obj->Authentication($username,$password,$htmlname);
             eval($result);
 		}
     }
 
 	public function send( $client, $msg ){
-		$msg = $this->frame( json_encode( $msg ) ); 
+		//$msg = $this->frame( json_encode( $msg ) ); 
+		$msg = $this->frame($msg); 
 		$return = socket_write( $client, $msg, strlen($msg) ); 
 		return $return;
 	} 

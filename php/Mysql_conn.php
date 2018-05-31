@@ -39,7 +39,7 @@ class Mysql_conn {
     }
 
     #数据库操作
-    public function Authentication($username, $password) {
+    public function Authentication($username, $password, $htmlname) {
         $query = "select password from UserList where username=\"$username\"";
         $rs = $this->Mysql_select($query);
         $password = substr(md5($password),0,20);
@@ -49,7 +49,7 @@ class Mysql_conn {
         foreach($rs as $val) {
             if($val["password"] === $password) {
                 //return "successLogin();"
-                return "\$this->successLogin(\$socket);";
+                return "\$this->successLogin(\$socket,'$htmlname');";
             }else{
                 //return "failureLogin();";
                 return "\$this->failureLogin(\$socket);";

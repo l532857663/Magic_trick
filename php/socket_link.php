@@ -19,11 +19,18 @@ class SocketChat {
 		if( !$this->master )
 			throw new \ErrorException("listen {$this->port} fail !");
 		self::$connectPool[] = $this->master;
-		while( true ){
+        echo "begini\n";
+        while( true ){
+            echo "ceshi1\n";
 			$readFds = self::$connectPool;
 			@socket_select( $readFds, $writeFds, $e = null, $this->timeout ); 
+            echo "ceshi2\n";
             foreach( $readFds as $socket ){
-				if( $this->master == $socket ){
+                echo "ceshi3\n";
+                var_dump($this->master);
+                var_dump($socket);
+                if( $this->master == $socket ){
+                    echo "ceshi4\n";
 					$client = socket_accept( $this->master ); 
 					$this->handShake = False;
 					if ($client < 0){
@@ -35,7 +42,8 @@ class SocketChat {
 							continue;
 						$this->connect( $client );
 					} 
-				}else{
+                }else{
+                    echo "ceshi5\n";
 					$bytes = @socket_recv($socket, $buffer, 2048, 0);
 					if( $bytes == 0 ){
 						$this->disConnect( $socket );
@@ -151,13 +159,15 @@ class SocketChat {
 
 	public function parseMessage( $message, $socket ){
 		$message = json_decode( $message, true );
-		$user = $message['userFlag'];
+/*		$user = $message['userFlag'];
 		if(!empty($user) && $user === "ture"){
-		}
+        }
+ */
+        $this->send($socket,"ok");
     }
 
 	public function send( $client, $msg ){
-		$msg = $this->frame( json_encode( $msg ) ); 
+		$msg = $this->frame( $msg ); 
 		$return = socket_write( $client, $msg, strlen($msg) ); 
 		return $return;
 	} 

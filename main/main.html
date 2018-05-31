@@ -1,5 +1,3 @@
-<!doctype html>
-<html>
 <head>
 <meta charset="utf-8">
 </meta>
@@ -11,7 +9,7 @@
         <div class="index_left_top">数据开发平台</div>
         <div class="menu">
             <ul id="ull">
-                <li ><a href="#" target="right">数据列表</a></li>
+                <li ><a href="javascript:;" onclick="jump_html('dataList.html');" target="right">数据列表</a></li>
                 <li ><a href="#" target="right">案件添加</a></li>
                 <li ><a href="#" target="right">案件管理</a></li>
                 <li ><a href="#" target="right">文本解析</a></li>
@@ -32,9 +30,27 @@
             <div class="clear"></div>
         </div>
         <div class="index_right_con">
-            <iframe name="right" id="rightMain" src="#" frameborder="no" scrolling="auto"  height="100%" allowtransparency="true" width="100%"/>
         </div>
 
     </div>
 </body>
-</html>
+
+<script>
+var ip_socket = "ws://192.168.11.139:7000";
+function jump_html(htmlname){
+	data_User = '{"htmlNM":"'+htmlname+'"}';
+    ws = new WebSocket(ip_socket);
+    ws.onopen = function(){
+        ws.send(data_User);
+    }
+    ws.onmessage = function(receive_Data){
+        var Data = receive_Data.data;
+        if(Data == '"FAILURE"'){
+            loginNO();
+            return;
+        }
+
+        document.getElementsByTagName("html")[0].innerHTML = Data;
+    }
+}
+</script>
