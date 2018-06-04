@@ -37,23 +37,41 @@ class SocketChat {
             var_dump($socket);
             echo "ceshi5\n";
             var_dump($this->master);
-            $pid = pcntl_fork();
-            //父进程和子进程都会执行下面代码
-            if ($pid == -1) {
-                //错误处理：创建子进程失败时返回-1.
-                die('could not fork');
-            } else if ($pid) {
-                echo "ceshi3\n";
-                sleep(2);
-                //重新等待
-                continue;
-            } else {
-                //子进程得到的$pid为0, 所以这里是子进程执行的逻辑。
-                echo "ceshi7\n";
-                $client = socket_accept( $socket ); 
-                $this->keepLink($client);
-                break;
+            if( $this->master == $socket ){
+            echo "ceshi6\n";
+                $client = socket_accept( $this->master ); 
+                $this->handShake = False;
+                if ($client < 0){
+                    $this->log('clinet connect false!');
+                }else{
+                    echo "connect\n";
+                    if( count( self::$connectPool ) > self::$maxConnectNum ){
+                        echo "again\n";
+                    }
+                    $this->connect( $client );
+                } 
             }
+            
+            $readFds = self::$connectPool;
+            echo "ceshi6_1\n";
+            var_dump($readFds);
+            @socket_select( $readFds, $writeFds, $e = null, $this->timeout ); 
+            $socket = end($readFds);
+            echo "ceshi7\n";
+            $bytes = @socket_recv($socket, $buffer, 2048, 0);
+            var_dump($bytes);
+            if( $bytes == 0 ){
+                $this->disConnect( $socket );
+            }else{
+                if( !$this->handShake ){
+                    $this->doHandShake( $socket, $buffer ); 
+                }else{
+                    $buffer = $this->decode( $buffer );
+                    $this->parseMessage( $buffer, $socket );
+                }
+            }
+            echo "ceshi7_1\n";
+            $this->keepLink($socket);
         }
     }
             
@@ -64,15 +82,11 @@ class SocketChat {
             var_dump($bytes);
             if( $bytes == 0 ){
                 $this->disConnect( $socket );
-                echo "ceshi9\n";
                 break;
+                echo "ceshi9\n";
             }else{
-                if( !$this->handShake ){
-                    $this->doHandShake( $socket, $buffer ); 
-                }else{
-                    $buffer = $this->decode( $buffer );
-                    $this->parseMessage( $buffer, $socket );
-                }
+                $buffer = $this->decode( $buffer );
+                $this->parseMessage( $buffer, $socket );
             }
             echo "ceshi10\n";
         }

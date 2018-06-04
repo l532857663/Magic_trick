@@ -1,6 +1,6 @@
 function login(){
+    console.log("cesahdi");
 	var data_User;
-    var ip_socket = "ws://192.168.11.139:7000";
 	var username = document.getElementById("username").value;
 	var password = document.getElementById("password").value;
 //	console.log(username,password);
@@ -13,10 +13,7 @@ function login(){
 	}
 
 	data_User = '{"userFlag":"ture","userNM":"'+username+'", "passWD":"'+password+'", "htmlNM":"main.html"}';
-    ws = new WebSocket(ip_socket);
-    ws.onopen = function(){
-        ws.send(data_User);
-    }
+    ws.send(data_User);
     ws.onmessage = function(receive_Data){
         console.log ("get msg");
         var Data = receive_Data.data;
@@ -25,9 +22,8 @@ function login(){
             return;
         }
 
-        document.getElementsByTagName("html")[0].innerHTML = Data;
+        document.getElementsByTagName("body")[0].innerHTML = Data;
     }
-
 }
 
 function KeyLogin()

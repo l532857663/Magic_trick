@@ -4,13 +4,17 @@
         <meta charset="utf-8">
         <title>数据分析平台</title>
         <link href="./css/public.css" rel="stylesheet" type="text/css">
-        <script src="./js/login.js"></script>
-        <style>
-body{background:url(./images/bg.png) center bottom no-repeat; background-size: 100% 100%; }
-        </style>
+<script>
+var ip_socket = "ws://192.168.11.139:7000";
+ws = new WebSocket(ip_socket);
+</script>
+<script src="./js/main.js"></script>
     </head>
 
     <body onkeydown="KeyLogin();">
+        <style>
+body{background:url(./images/bg.png) center bottom no-repeat; background-size: 100% 100%; }
+        </style>
         <section class="login_head">
             <p>数据分析平台</p>
             <p>Data analysis platform</p>
@@ -45,6 +49,7 @@ body{background:url(./images/bg.png) center bottom no-repeat; background-size: 1
                 <input type="button" onclick="login()" value="登录"/>
             </div>
         </section>
+        <script src="./js/login.js"></script>
 
     </body>
 </html>
