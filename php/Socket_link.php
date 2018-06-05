@@ -26,33 +26,27 @@ class SocketChat {
 
 	public function startServer() {
         while(true){
-            echo "ceshi1\n";
             $readFds = self::$connectPool;
-            var_dump($readFds);
-            echo "ceshi2\n";
             @socket_select( $readFds, $writeFds, $e = null, $this->timeout ); 
-            var_dump($readFds);
-            $socket = end($readFds);
-            echo "ceshi4\n";
-            var_dump($socket);
-            echo "ceshi5\n";
-            var_dump($this->master);
+
             $pid = pcntl_fork();
             //父进程和子进程都会执行下面代码
             if ($pid == -1) {
                 //错误处理：创建子进程失败时返回-1.
                 die('could not fork');
-            } else if ($pid) {
+            } else if ($pid == 0) {
+                //子进程得到的$pid为0, 所以这里是子进程执行的逻辑。
+                $socket = end($readFds);
+                $client = socket_accept( $socket ); 
+                if ($client){
+                    $this->keepLink($client);
+                }
+                break;
+            } else {
                 echo "ceshi3\n";
-                sleep(2);
+                sleep(1);
                 //重新等待
                 continue;
-            } else {
-                //子进程得到的$pid为0, 所以这里是子进程执行的逻辑。
-                echo "ceshi7\n";
-                $client = socket_accept( $socket ); 
-                $this->keepLink($client);
-                break;
             }
         }
     }
@@ -77,6 +71,7 @@ class SocketChat {
             echo "ceshi10\n";
         }
         echo "over\n";
+        return;
     }
 
 
