@@ -29,6 +29,7 @@ class Mysql_conn {
         $rs = mysqli_query($this->conn, $query);
         if(!$rs){
             $err_str = mysqli_errno($this->conn);
+            echo $err_str;
             return $err_str;
         }
         $rs_arr = array();
@@ -39,20 +40,20 @@ class Mysql_conn {
     }
 
     #数据库操作
-    public function Authentication($username, $password, $htmlname) {
+    public function Authentication($username, $password) {
         $query = "select password from UserList where username=\"$username\"";
-        $rs = $this->Mysql_select($query);
+        $rs = self::Mysql_select($query);
         $password = substr(md5($password),0,20);
         if(!$rs){
-            return "\$this->failureLogin(\$socket);";
+            return False;
         }
         foreach($rs as $val) {
             if($val["password"] === $password) {
                 //return "successLogin();"
-                return "\$this->successLogin(\$socket,'$htmlname');";
+                return True;
             }else{
                 //return "failureLogin();";
-                return "\$this->failureLogin(\$socket);";
+                return False;
             }
         }
     }
@@ -60,19 +61,11 @@ class Mysql_conn {
 }
 
 /** 测试代码
-function successLogin(){
-    echo "success for you";
-}
-function failureLogin(){
-    echo "failure for you";
-}
- 
 $a = "123123";
 $b = "123456";
 $sql_obj = new Mysql_conn();
 $result = $sql_obj->Authentication($a,$b);
 echo $result;
-//eval($result);
  */
 
 /**
